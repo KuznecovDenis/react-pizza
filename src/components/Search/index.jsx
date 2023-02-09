@@ -1,11 +1,32 @@
 import React from 'react'
 
 import styles from './Search.module.scss'
-
+import debounce from 'lodash.debounce'
 import {SearchContext} from '../../App'
 
 const Search = () => {
-  const {searchValue, setSearchValue} = React.useContext(SearchContext)
+  const [value, setValue] = React.useState('')
+  const {setSearchValue} = React.useContext(SearchContext)
+  const inputRef = React.useRef(null)
+
+  const onClickClear = () => {
+    setSearchValue('')
+    setValue('')
+    inputRef.current.focus()
+  }
+
+  const updateSearchValue = React.useCallback(
+    debounce((str) => {
+      setSearchValue(str)
+      console.log(str)
+    }, 400),
+    [],
+  )
+
+  const onChangeInput = (e) => {
+    setValue(e.target.value)
+    updateSearchValue(e.target.value)
+  }
 
   return (
     <div className={styles.root}>
@@ -21,9 +42,15 @@ const Search = () => {
           ></path>
         </g>
       </svg>
-      <input className={styles.input} placeholder='Поиск пиццы ...' value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
-      {searchValue && (
-        <svg onClick={() => setSearchValue('')} className={styles.clearIcon} viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <input ref={inputRef} className={styles.input} placeholder='Поиск пиццы ...' value={value} onChange={onChangeInput} />
+      {value && (
+        <svg
+          onClick={onClickClear}
+          className={styles.clearIcon}
+          viewBox='0 0 24 24'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
           <g id='SVGRepo_bgCarrier' strokeWidth='0'></g>
           <g id='SVGRepo_tracerCarrier' strokeLinecap='round' strokeLinejoin='round'></g>
           <g id='SVGRepo_iconCarrier'>

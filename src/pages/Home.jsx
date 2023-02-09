@@ -10,23 +10,25 @@ import {SearchContext} from '../App'
 
 //REDUX-TOOLKIT
 import {useSelector, useDispatch} from 'react-redux'
-import {setCategoryId} from '../redux/slices/filterSlice'
+import {setCategoryId, setCurrentPage} from '../redux/slices/filterSlice'
 
 const Home = () => {
   const {searchValue} = React.useContext(SearchContext)
+  const [items, setItems] = React.useState([])
+  const [isLoading, setIsLoading] = React.useState(true)
 
   //REDUX
   const dispatch = useDispatch()
-  const {categoryId, sort} = useSelector((state) => state.filter)
+  const {categoryId, sort, currentPage} = useSelector((state) => state.filter)
 
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id))
   }
-  //REDUX
 
-  const [items, setItems] = React.useState([])
-  const [isLoading, setIsLoading] = React.useState(true)
-  const [currentPage, setCurrentPage] = React.useState(1)
+  const onChangePage = (number) => {
+    dispatch(setCurrentPage(number))
+  }
+  //REDUX
 
   React.useEffect(() => {
     setIsLoading(true)
@@ -58,7 +60,7 @@ const Home = () => {
       </div>
       <h2 className='content__title'>Все пиццы</h2>
       <div className='content__items'>{isLoading ? skeletons : pizzas}</div>
-      <Pagination onChangePage={(number) => setCurrentPage(number)} />
+      <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </>
   )
 }
